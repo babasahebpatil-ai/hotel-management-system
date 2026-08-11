@@ -1,0 +1,324 @@
+
+
+/* ===== Reset & Base ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+body { background:#f4f6f8; color:#222; }
+
+/* ===== Header ===== */
+.header {
+  background:#000;
+  color: gold;
+  text-align:center;
+  padding:18px;
+  font-weight:700;
+  letter-spacing:1px;
+}
+
+/* ===== Layout ===== */
+.dashboard { display:flex; height: calc(100vh - 72px); }
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: 240px;
+  background:#111;
+  color:#fff;
+  padding-top:22px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  position:fixed;
+  left:0;
+  top:72px;
+  bottom:0;
+}
+.hotel-logo { color:gold; font-weight:700; font-size:18px; margin-bottom:22px; }
+.sidebar ul { list-style:none; width:100%; padding-left:0; }
+.sidebar li { width:100%; }
+.sidebar a {
+  display:block; text-decoration:none; color:#fff; padding:12px 20px;
+  transition:all .2s ease;
+}
+.sidebar a:hover, .sidebar a.active { background: gold; color:#000; }
+
+/* ===== Main content ===== */
+.main-content {
+  margin-left:240px;
+  padding:28px;
+  width: calc(100% - 240px);
+  overflow-y:auto;
+}
+
+/* ===== Page title ===== */
+.page-title { font-size:24px; margin-bottom:18px; color:#100101; text-align:center; }
+
+/* ===== Banner ===== */
+.banner img { width:100%; border-radius:100px; box-shadow:0 6px 14px rgba(0,0,0,0.12); }
+
+/* ===== Cards ===== */
+.card-row { display:flex; gap:20px; justify-content:center; margin-bottom:24px; }
+.report-card {
+  background:#fff; width:260px; padding:22px; border-radius:10px;
+  box-shadow:0 8px 18px rgba(0,0,0,0.06); text-align:center;
+}
+.report-card h3 { color:#555; margin-bottom:10px; }
+.report-number { font-size:28px; font-weight:700; color:gold; }
+
+/* ===== Tables ===== */
+.table { width:100%; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 6px 12px rgba(0,0,0,0.06); }
+.table th, .table td { padding:12px 10px; text-align:center; border-bottom:1px solid #eee; }
+.table th { background: gold; color:#000; font-weight:700; }
+.table tr:last-child td { border-bottom: none; }
+
+/* ===== Forms ===== */
+.form-card { background:#fff; padding:20px; border-radius:10px; box-shadow:0 6px 12px rgba(0,0,0,0.06); }
+.form-card h3 { color:gold; text-align:center; margin-bottom:14px; }
+.form-card label { display:block; margin-top:8px; font-weight:600; color:#333; }
+.form-card input, .form-card select {
+  width:100%; padding:10px; margin-top:6px; border:1px solid #ddd; border-radius:8px; outline:none;
+}
+.form-card input:focus, .form-card select:focus { border-color: gold; box-shadow:0 6px 14px rgba(255,215,0,0.12); }
+
+.btn {
+  background:gold; color:#000; padding:10px 14px; border:none; border-radius:8px; font-weight:700; cursor:pointer; margin-top:12px;
+}
+.btn.cancel { background:#666; color:#fff; margin-left:8px; }
+.btn-small { padding:6px 8px; border-radius:6px; font-size:13px; cursor:pointer; border:none; text-decoration:none; }
+
+/* ===== Booking specific ===== */
+.booking-grid { display:grid; grid-template-columns: 36% 64%; gap:22px; }
+.booking-form { padding:16px; }
+.booking-table { padding:16px; }
+
+/* edit/delete colors */
+.edit-btn { background:#0cc835; color:#000; border-radius:6px; padding:6px 8px; margin-right:6px; }
+.delete-btn { background:#e74c3c; color:#fff; border-radius:6px; padding:6px 8px; text-decoration:none; }
+
+/* ===== Customer page ===== */
+.customer-table { margin-top:12px; }
+
+/* ===== Auth pages ===== */
+.auth-container {
+  width:420px; margin:80px auto; background:#fff; padding:28px; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+.auth-container h2 { color:gold; margin-bottom:14px; text-align:center; }
+.auth-container label { display:block; text-align:left; margin-top:8px; font-weight:600; }
+.auth-container input { width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; margin-top:6px; }
+
+/* ===== Popup form styles (customer add) ===== */
+.popup-form { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:50; align-items:center; justify-content:center; }
+.form-card { width:100%; max-width:420px; margin:30px auto; }
+
+/* ===== Responsive ===== */
+@media(max-width:900px){
+  .dashboard { flex-direction:column; }
+  .sidebar { position:relative; width:100%; height:auto; display:flex; flex-direction:row; gap:8px; padding:10px; justify-content:space-around; }
+  .main-content { margin-left:0; width:100%; padding:16px; height:auto; }
+  .booking-grid { grid-template-columns: 1fr; }
+  .card-row { flex-direction:column; align-items:center; }
+}
+/* --- Hotel Banner Section --- */
+.banner-section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+.hotel-banner {
+  width: 100%;
+  height: 55vh;
+  object-fit: cover;
+  border-radius: 14px;
+  display: block;
+}
+
+.banner-text {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 20px 40px;
+  border-radius: 12px;
+}
+
+.banner-text h1 {
+  font-size: 2.2rem;
+  color: rgb(234, 234, 27);
+  margin-bottom: 6px;
+}
+
+.banner-text p {
+  font-size: 1rem;
+}
+
+/* --- Room Gallery --- */
+.gallery {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.gallery h3 {
+  font-size: 1.8rem;
+  color: rgba(22, 22, 21, 0.84);
+  margin-bottom: 18px;
+}
+
+.gallery-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.gallery-row img {
+  width: 30%;
+  max-width: 400px;
+  border-radius: 12px;
+  object-fit: cover;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.gallery-row img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px
+/* --- Sidebar bed images --- */
+.sidebar-beds {
+  margin-top: auto;
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-beds img {
+  width: 90%;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease;
+}
+
+.sidebar-beds img:hover {
+  transform: scale(1.05);
+}
+
+/* --- Hotel Banner Full HD --- */
+.banner-section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+.hotel-banner {
+  width: 100%;
+  height: 90vh;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+.banner-text {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: gold;
+  padding: 20px 40px;
+  border-radius: 10px;
+}
+
+.banner-text h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+.banner-text p {
+  color: #fff;
+  margin-top: 8px;
+}
+
+@media (max-width: 900px) {
+  .hotel-banner { height: 70vh; }
+  .sidebar-beds img { width: 70%; margin: 0 auto; }
+}
+/* --- Customer Table --- */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.data-table th, .data-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.data-table th {
+  background-color: gold;
+  color: black;
+  font-weight: bold;
+}
+
+.data-table tr:hover {
+  background-color: #f2f2f2;
+}
+
+.btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.btn-edit {
+  background-color: #3498db;
+}
+
+.btn-edit:hover {
+  background-color: #2980b9;
+}
+
+.btn-delete {
+  background-color: #e74c3c;
+}
+
+.btn-delete:hover {
+  background-color: #c0392b;
+}
+.btn-small {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background-color: gold;
+  color: black;
+  margin-right: 5px;
+}
+
+.delete-btn {
+  background-color: red;
+  color: white;
+}
+

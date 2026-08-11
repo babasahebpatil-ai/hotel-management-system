@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bookings - Hotel</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+  /* === BLUR BACKGROUND for Customers Page === */
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: url('{{ url_for('static', filename='image/bg.jpg') }}') no-repeat center center fixed;
+    background-size: cover;
+    background-attachment: fixed;
+    color: white;
+    height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    z-index: -1;
+  }
+
+  /* === GLASS CONTAINER === */
+  .glass {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+    padding: 25px;
+    color: #090808;
+    margin: 30px;
+  }
+
+  /* === TABLE STYLE === */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    margin-top: 15px;
+  }
+
+  th, td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  th {
+    background: rgba(255, 215, 0, 0.3);
+  }
+
+  tr:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* === BUTTONS === */
+  .btn-small {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    margin: 0 3px;
+    display: inline-block;
+  }
+
+  .edit-btn {
+    background: gold;
+    color: black;
+  }
+
+  .delete-btn {
+    background: crimson;
+    color: white;
+  }
+
+  .edit-btn:hover {
+    background: #ffea00;
+  }
+
+  .delete-btn:hover {
+    background: red;
+  }
+
+  .add-btn {
+    background: gold;
+    color: black;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+
+  .add-btn:hover {
+    background: #ffdf00;
+  }
+
+  /* === GO BACK BUTTON === */
+  .go-back {
+    background: #444;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+    display: inline-block;
+    margin-bottom: 15px;
+  }
+
+  .go-back:hover {
+    background: #666;
+    box-shadow: 0 0 10px rgba(255,255,255,0.3);
+  }
+
+  /* === POPUP FORM === */
+  .popup-form {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .form-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 30px;
+    width: 320px;
+    color: rgb(15, 10, 10);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+
+  .form-card input, .form-card select {
+    width: 100%;
+    padding: 8px;
+    margin: 6px 0;
+    border: none;
+    border-radius: 8px;
+    background: rgba(228, 224, 224, 0.844);
+    color: rgba(20, 15, 15, 0.868);
+    outline: none;
+  }
+
+  .form-card button {
+    background: gold;
+    color: black;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .form-card .cancel {
+    background: gray;
+    color: white;
+  }
+</style>
+
+</head>
+<body>
+  <header class="header">HOTEL MANAGEMENT SYSTEM</header>
+
+  <div class="dashboard">
+    <nav class="sidebar">
+      <div class="hotel-logo">🏨 GRAND HOTEL</div>
+      <ul>
+        <li><a href="{{ url_for('home') }}">🏠 Home</a></li>
+        <li><a href="{{ url_for('bookings') }}" class="active">🛏️ Bookings</a></li>
+        <li><a href="{{ url_for('customers') }}">👥 Customers</a></li>
+        <li><a href="{{ url_for('reports') }}">📊 Reports</a></li>
+        <li><a href="{{ url_for('logout') }}">🚪 Logout</a></li>
+      </ul>
+    </nav>
+
+    <main class="main-content glass">
+
+      <h2 class="page-title">Room Booking Management</h2>
+
+      <!-- ✅ Go Back Button -->
+      <a href="{{ url_for('home') }}" class="go-back">⬅️ Go Back</a>
+
+      <div class="booking-grid">
+        <!-- Form -->
+        <div class="form-card booking-form">
+          <h3 id="form-title">Add New Booking</h3>
+          <form id="bookingForm" method="POST" action="/add_booking">
+            <input type="hidden" name="id" id="booking_id">
+            <label>Customer Contact</label>
+            <input type="text" name="contact" id="contact" required>
+
+            <label>Check-in Date</label>
+            <input type="date" name="checkin" id="checkin" required>
+
+            <label>Check-out Date</label>
+            <input type="date" name="checkout" id="checkout" required>
+
+            <label>Room Type</label>
+            <select name="room_type" id="room_type" required>
+              <option>Single</option>
+              <option>Double</option>
+              <option>Luxury</option>
+            </select>
+
+            <label>Room No</label>
+            <input type="text" name="room_no" id="room_no" required>
+
+            <label>Meal</label>
+            <select name="meal" id="meal" required>
+              <option>Breakfast</option>
+              <option>Lunch</option>
+              <option>Full Board</option>
+            </select>
+
+            <label>No. of Days</label>
+            <input type="number" name="days" id="days" min="1" required>
+
+            <label>Subtotal</label>
+            <input type="number" name="subtotal" id="subtotal" step="0.01">
+
+            <label>Tax</label>
+            <input type="number" name="tax" id="tax" step="0.01">
+
+            <label>Total</label>
+            <input type="number" name="total" id="total" step="0.01" placeholder="or auto-calc">
+
+            <button type="submit" class="btn">Save Booking</button>
+            <button type="button" class="btn cancel" onclick="resetForm()">Reset</button>
+          </form>
+        </div>
+
+        <!-- Table -->
+        <div class="booking-table">
+          <h3 style="text-align:center; color:gold; margin-bottom:12px;">All Bookings</h3>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th><th>Contact</th><th>Check-in</th><th>Check-out</th><th>Room Type</th><th>Room No</th><th>Meal</th><th>Days</th><th>Total</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for b in bookings %}
+              <tr>
+                <td>{{ b.id }}</td>
+                <td>{{ b.customer_contact }}</td>
+                <td>{{ b.checkin_date }}</td>
+                <td>{{ b.checkout_date }}</td>
+                <td>{{ b.room_type }}</td>
+                <td>{{ b.room_no }}</td>
+                <td>{{ b.meal }}</td>
+                <td>{{ b.no_of_days }}</td>
+                <td>₹{{ b.total }}</td>
+                <td>
+                  <button class="btn-small edit-btn"
+                    onclick="editBooking('{{ b.id }}','{{ b.customer_contact }}','{{ b.checkin_date }}','{{ b.checkout_date }}','{{ b.room_type }}','{{ b.room_no }}','{{ b.meal }}','{{ b.no_of_days }}','{{ b.subtotal }}','{{ b.tax }}','{{ b.total }}')">✏️ Edit</button>
+                  <a href="/delete_booking/{{ b.id }}" class="btn-small delete-btn">🗑️ Delete</a>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="10">No bookings found</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+<script>
+  function editBooking(id, contact, checkin, checkout, room_type, room_no, meal, days, subtotal, tax, total) {
+    document.getElementById('form-title').innerText = "Update Booking";
+    document.getElementById('booking_id').value = id;
+    document.getElementById('contact').value = contact;
+    document.getElementById('checkin').value = checkin;
+    document.getElementById('checkout').value = checkout;
+    document.getElementById('room_type').value = room_type;
+    document.getElementById('room_no').value = room_no;
+    document.getElementById('meal').value = meal;
+    document.getElementById('days').value = days;
+    document.getElementById('subtotal').value = subtotal;
+    document.getElementById('tax').value = tax;
+    document.getElementById('total').value = total;
+    document.getElementById('bookingForm').action = "/update_booking";
+  }
+
+  function resetForm() {
+    document.getElementById('form-title').innerText = "Add New Booking";
+    document.getElementById('bookingForm').reset();
+    document.getElementById('booking_id').value = "";
+    document.getElementById('bookingForm').action = "/add_booking";
+  }
+
+  // Auto-calc total
+  document.getElementById('subtotal').addEventListener('input', calcTotal);
+  document.getElementById('tax').addEventListener('input', calcTotal);
+  function calcTotal() {
+    const s = parseFloat(document.getElementById('subtotal').value) || 0;
+    const t = parseFloat(document.getElementById('tax').value) || 0;
+    document.getElementById('total').value = (s + t).toFixed(2);
+  }
+</script>
+</body>
+</html>

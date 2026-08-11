@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard - Hotel FULLERTON</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="header">HOTEL MANAGEMENT SYSTEM</header>
+
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="hotel-logo">🏨 HOTEL FULLERTON </div>
+      <ul>
+        <li><a href="{{ url_for('home') }}" class="active">🏠 Home</a></li>
+        <li><a href="{{ url_for('bookings') }}">🛏️ Bookings</a></li>
+        <li><a href="{{ url_for('customers') }}">👥 Customers</a></li>
+        <li><a href="{{ url_for('reports') }}">📊 Reports</a></li>
+        <li><a href="{{ url_for('logout') }}">🚪 Logout</a></li>
+      </ul>
+
+      <!-- Bed images under logout -->
+      <div class="sidebar-beds">
+        <img src="{{ url_for('static', filename='image/bed1.jpg') }}" alt="Room 1">
+        <img src="{{ url_for('static', filename='image/bed2.jpg') }}" alt="Room 2">
+      </div>
+    </nav>
+
+    <!-- Main Dashboard -->
+    <main class="main-content glass">
+
+      <h2 class="page-title">Welcome, FULLERTON</h2>
+      
+
+      <!-- Full HD Hotel Banner -->
+      <section class="banner-section">
+        <img src="{{ url_for('static', filename='image/hotel_banner.jpg') }}" alt="Hotel Banner" class="hotel-banner">
+        <div class="banner-text">
+          <h1>Experience Luxury & Comfort</h1>
+          <p>“Where luxury meets peace — stay with Hotel Fullerton"</p>
+        </div>
+      </section>
+
+      <!-- Rooms Gallery -->
+      <section class="gallery">
+        <h3>Our Rooms </h3>
+        <div class="gallery-row">
+          <img src="{{ url_for('static', filename='image/bed1.jpg') }}" alt="Room 1">
+          <img src="{{ url_for('static', filename='image/bed2.jpg') }}" alt="Room 2">
+          <img src="{{ url_for('static', filename='image/bed4.jpg') }}" alt="Room 3">
+
+          <p class="footer-note">Manage bookings, customers, and view hotel reports.</p>
+
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

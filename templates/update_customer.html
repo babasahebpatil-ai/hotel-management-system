@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Update Customer - Hotel</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: url('{{ url_for('static', filename='image/bg.jpg') }}') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(6px);
+      z-index: 0;
+    }
+
+    .update-box {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 40px 50px;
+      width: 400px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      color: #fff;
+    }
+
+    .update-box h2 {
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: gold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input:focus, select:focus {
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 10px gold;
+    }
+
+    .btn {
+      background: gold;
+      color: black;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #ffde3d;
+      box-shadow: 0 0 10px gold;
+      transform: scale(1.05);
+    }
+
+    .cancel {
+      background: gray;
+      color: white;
+      margin-left: 10px;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 15px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: gold;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="update-box">
+    <h2>✏️ Update Customer</h2>
+    <form action="{{ url_for('update_customer', id=customer.id) }}" method="POST">
+      <input type="text" name="name" value="{{ customer.name }}" placeholder="Full Name" required>
+      <select name="gender" required>
+        <option value="Male" {% if customer.gender == 'Male' %}selected{% endif %}>Male</option>
+        <option value="Female" {% if customer.gender == 'Female' %}selected{% endif %}>Female</option>
+      </select>
+      <input type="email" name="email" value="{{ customer.email }}" placeholder="Email" required>
+      <input type="text" name="nationality" value="{{ customer.nationality }}" placeholder="City" required>
+      <input type="text" name="address" value="{{ customer.address }}" placeholder="Address" required>
+      <input type="text" name="contact" value="{{ customer.contact }}" placeholder="Contact" required>
+
+      <button class="btn" type="submit">💾 Update</button>
+      <a href="{{ url_for('customers') }}" class="btn cancel">❌ Cancel</a>
+    </form>
+  </div>
+</body>
+</html>

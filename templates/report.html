@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Reports - Hotel</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="header">HOTEL MANAGEMENT SYSTEM</header>
+
+  <div class="dashboard">
+    <nav class="sidebar">
+      <div class="hotel-logo">🏨 GRAND HOTEL</div>
+      <ul>
+        <li><a href="{{ url_for('home') }}">🏠 Home</a></li>
+        <li><a href="{{ url_for('bookings') }}">🛏️ Bookings</a></li>
+        <li><a href="{{ url_for('customers') }}">👥 Customers</a></li>
+        <li><a href="{{ url_for('reports') }}" class="active">📊 Reports</a></li>
+        <li><a href="{{ url_for('logout') }}">🚪 Logout</a></li>
+      </ul>
+    </nav>
+
+    <main class="main-content">
+      <h2 class="page-title">Hotel Reports & Statistics</h2>
+
+      <div class="card-row">
+        <div class="report-card">
+          <h3>Total Bookings</h3>
+          <p class="report-number">{{ report.total_bookings or 0 }}</p>
+        </div>
+        <div class="report-card">
+          <h3>Total Revenue</h3>
+          <p class="report-number">₹{{ report.total_revenue or 0 }}</p>
+        </div>
+      </div>
+
+      <div class="chart-container" style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 8px 18px rgba(0,0,0,0.06);">
+        <h3 style="color:gold; text-align:center; margin-bottom:8px;">Revenue by Room Type</h3>
+        <canvas id="roomChart"></canvas>
+      </div>
+    </main>
+  </div>
+
+<script>
+  const ctx = document.getElementById('roomChart').getContext('2d');
+  const roomLabels = {{ room_labels|tojson }};
+  const roomData = {{ room_data|tojson }};
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: roomLabels,
+      datasets: [{
+        label: 'Revenue (₹)',
+        data: roomData,
+        backgroundColor: ['#FFD700', '#FFC94D', '#E6B800', '#C9A800'],
+        borderColor: '#333',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+</script>
+</body>
+</html>
