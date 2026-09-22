@@ -1,274 +1,671 @@
-# 🏦 BankSphere Intelligence — Banking Performance & Transaction Analytics
+# 🏦 BankSphere Intelligence
+## Banking Performance & Transaction Analytics
 
-A SQL, Excel, and Power BI portfolio project analyzing loan portfolio performance and credit/debit transaction activity for a simulated retail bank, with an emphasis on KPI governance and data quality.
+> An end-to-end banking analytics project using **PostgreSQL, Excel, and Power BI** to analyze loan portfolio performance, validate KPI definitions, monitor credit/debit transactions, and build management-ready reporting.
 
----
-
-## 📋 Project Overview
-
-BankSphere Intelligence is a banking analytics case study built around two operational areas: **loan portfolio performance** (client activity, funding, recovery, delinquency/default, branch and product performance) and **transaction monitoring** (credit/debit flow, bank/branch activity, transaction methods, time trends, and high-value review flags).
-
-The project is deliberately positioned as a **Data Analyst / BI Analyst** portfolio piece rather than a fraud-detection or credit-scoring system. The core workflow moves from Excel source review, through SQL data-quality checks and KPI analysis, into Power BI dashboards, and finishes with documented business findings and recommendations.
-
-What sets this project apart from a typical practice dataset is the data-quality work: several KPI definitions conflicted across the source Excel workbooks and the original Power BI dashboards (e.g., two different "default rate" definitions, an invalid ratio metric). These conflicts were identified, quantified in SQL, and resolved with governed, documented KPI definitions — the kind of reconciliation work a working BI/Data Analyst is actually asked to do.
-
-**Skill focus:** SQL 40% · Power BI 40% · Excel 20%
+**Author:** Babasaheb Patil  
+**Role Focus:** Data Analyst | BI Analyst  
+**Domain:** Banking & Financial Services  
+**Tech Stack:** PostgreSQL | SQL | Excel | Power BI | DAX
 
 ---
 
-## 🎯 Business Problem
+## 📌 Project Overview
 
-A retail bank needs a consistent management view across lending operations and transaction activity, but existing reports use KPI definitions and labels that aren't standardized across tools. Management needs reliable answers to questions like:
+BankSphere Intelligence is a banking analytics case study designed to analyze lending performance and transaction activity within a retail banking environment.
 
-- How large is the loan portfolio, and how many unique clients does it represent?
-- What are the actual default, delinquency, and on-time repayment rates?
-- Which branches, regions, and products deserve deeper review?
-- How are credit/debit flows and transaction volumes trending?
-- Which transactions exceed the high-value review threshold, and where are they concentrated?
+The project works with:
 
----
+- **2,000 loan records**
+- **870 unique clients**
+- **100,000 banking transactions**
 
-## ✅ Objectives
+The main focus is not only dashboard creation, but also **data validation, KPI reconciliation, SQL analysis, business reporting, and identifying inconsistencies in banking data**.
 
-- Validate and reconcile loan and transaction source data across Excel, SQL, and Power BI
-- Define and document a governed KPI dictionary for both modules
-- Analyze loan portfolio performance: recovery, default, delinquency, retention, branch/product concentration
-- Analyze transaction activity: credit/debit flow, high-value review workload, monthly trends
-- Identify and quantify conflicts in the source data rather than silently picking one number
-- Build Power BI dashboards that reflect the corrected, governed KPI definitions
-- Translate findings into specific, evidence-backed business recommendations
+This project is positioned as a **Data Analyst / BI Analyst portfolio project**, not as a fraud-detection or credit-scoring system.
 
 ---
 
-## 🗂️ Dataset
+## 📊 Key Results at a Glance
 
-| Detail | Loan Portfolio | Transactions |
-|---|---|---|
-| **File** | `final_fact_cleaned.csv` | `credit_debit_bank.csv` |
-| **Records** | 2,000 loan records | 100,000 transaction records |
-| **Unique clients / accounts** | 870 unique clients | 100,000 unique customers / accounts |
-| **Key fields** | loan amount, funded amount, disbursement date, loan status, credit score, branch, region, repayment behavior, default/delinquency flags | credit/debit amount, transaction date, bank, branch, transaction method, customer ID, account number |
-| **Time period** | 2015–2023 (loan disbursements) | Rolling monthly data through Dec 2024 (Dec has 1 day only) |
-
-The data is simulated: amounts are uniformly distributed, credit and debit totals differ by only 0.25%, and standard risk fields (credit score, grade, employment type) show no statistical relationship with default outcomes. This is disclosed openly in the project rather than glossed over — the project demonstrates analytical *method*, not real-world credit or fraud conclusions.
-
----
-
-## 🛠️ Tools & Technologies
-
-- **SQL** — PostgreSQL 13+ and MySQL 8 (both included), covering `GROUP BY`/`HAVING`/`CASE`, CTEs, subqueries, window functions (`LAG`, `ROW_NUMBER`, `RANK`, `DENSE_RANK`, `NTILE`), rolling averages, and reconciliation queries
-- **Power BI** — three `.pbix` dashboards with DAX measures, drill-downs, filters/slicers, and management-facing views
-- **Excel** — two workbooks with PivotTables, PivotCharts, and formula-based reconciliation checks
-- **Python** — used only for a CSV export utility (`data/export_excel_to_csv.py`); not used for analysis
-
----
-
-## 🔄 Project Workflow
-
-```text
-Excel Source Review
-      ↓
-SQL Data Quality Checks
-      ↓
-SQL KPI / Trend / Segment Analysis
-      ↓
-Power BI Modeling & Dashboards
-      ↓
-Business Findings
-      ↓
-Recommendations & Monitoring
-```
-
----
-
-## 🧹 Data Cleaning & Preparation
-
-- Standardized the loan client-ID column name (`client_id`) across all SQL scripts
-- Separated **Loan Records** (2,000 rows) from **Unique Clients** (870), which had been mislabeled as the same thing
-- Reconciled two conflicting funded-amount fields (`Funded_Amount` vs `Funded_Amount_Inv`)
-- Flagged and excluded incomplete calendar periods (December 2024 has only 1 day of data) from trend conclusions
-- Identified payment-integrity issues: 185 loans with recovered principal exceeding total payment, and 991 loans (49.6%) with funded amount above loan amount
-- Checked NULLs, duplicates, invalid monetary values, and category consistency across both source tables
-
----
-
-## 🗃️ SQL Analysis
-
-SQL work is organized into eight scripts (mirrored for PostgreSQL and MySQL):
-
-- **Data quality** (`01`, `03`) — NULL checks, duplicate detection with `ROW_NUMBER()`, invalid amounts, category and range validation, period-completeness checks
-- **KPI analysis** (`02`, `04`) — loan/transaction KPIs, cohort-based retention, branch and product scorecards, rolling trends, `NTILE()`-based activity segmentation
-- **Power BI-ready views** (`05`) — pre-aggregated views feeding the dashboards
-- **Reconciliation** (`06`) — cross-checks between SQL, Excel, and Power BI outputs
-- **Consistency checks** (`07`) — quantifies the source-data conflicts described below (default definitions, delinquency vs. repayment behavior, duplicate high-value thresholds)
-
----
-
-## 📊 Power BI / Dashboards
-
-Three dashboards: two for loan portfolio, one for transaction intelligence. As part of this project's correction pass, several dashboard labels were fixed to match governed KPI definitions rather than misleading legacy labels:
-
-- `Total Clients` → **Loan Records** (this card was counting rows, not clients)
-- `Default Rate` (5%) → **Default Flag Rate**, clearly distinguished from the primary **Status Default Rate** (10.30%)
-- Invalid `Account Activity Ratio` (`COUNT(*) / SUM(Balance)`) → replaced with **Transaction Count**
-- `Suspicious Transaction Count` → **High-Value Review Count**, using the governed `Amount > 4,500` rule instead of the legacy `≥ 4,000` workbook flag
-- `Product Profitability` → **Product Interest Contribution** (no cost data exists to support a true profitability metric)
-
-Legacy pre-correction screenshots are kept in `images/` for reference; see `docs/powerbi_dashboard_audit.md` for the full correction log.
-
----
-
-## 📌 Key KPIs
-
-**Loan Portfolio**
-
-| KPI | Value |
+| KPI | Result |
 |---|---:|
 | Loan Records | 2,000 |
 | Unique Clients | 870 |
-| Active Clients | 324 |
 | Total Loan Amount | ₹52.36M |
 | Average Loan Amount | ₹26.18K |
-| Principal Recovery Rate (as recorded) | 99.05% |
-| Status Default Rate (primary) | 10.30% |
-| Default Flag Rate (legacy) | 5.00% |
-| Delinquency Rate | 10.35% |
-| On-Time Repayment Rate | 71.05% |
-| Client Retention (2020 → 2021) | 24.5% |
-
-**Transactions**
-
-| KPI | Value |
-|---|---:|
-| Transaction Count | 100,000 |
-| Total Credit | ₹127.60M |
-| Total Debit | ₹127.29M |
-| Net Flow | ₹0.32M |
-| Average Transaction Amount | ₹2,549 |
-| High-Value Review Count (> ₹4,500) | 10,428 (10.43%) |
-| Legacy Source Flag Count (≥ ₹4,000, reconciliation only) | 20,426 |
+| Status-Based Default Rate | 10.30% |
+| Legacy Default Flag Rate | 5.00% |
+| Transaction Records | 100,000 |
+| Total Credit Amount | ₹127.60M |
+| Total Debit Amount | ₹127.29M |
+| Net Transaction Flow | ₹0.32M |
+| High-Value Transactions | 10,428 |
+| High-Value Review Rate | 10.43% |
 
 ---
 
-## 💡 Key Insights
+## Business Problem
 
-- **Default rate depends entirely on definition.** Status-based default is 10.30% vs. a flag-based 5.00%, and only 10 loans satisfy both — a headline "5% default" figure describes almost none of the loans whose status actually says Default.
-- **Standard risk indicators carry no signal on this data.** Credit score correlates at ~0.03 with default; default rate by credit-score band ranges 9.5–14.0%, with the *highest* rate in the 800+ band — supporting the conclusion that the dataset is simulated.
-- **Two regions stand out for review.** Bihar/Patna (19.6% default on 92 loans) and Odisha/Bhubaneswar (23.3% on 30 loans) sit well above the 10.3% portfolio average, though sample sizes are small.
-- **Portfolio concentration is real.** The top five branches hold 40.4% of loan value; Services-purpose loans are 56.9% of records and 57.7% of recorded interest income.
-- **Client retention is low.** Only 24.5% of 2020 borrowers returned to borrow again in 2021.
-- **Transaction flows are balanced.** ₹127.60M credit vs. ₹127.29M debit (ratio 1.0025), with a governed high-value review workload of 10.43% of all transactions.
-- **Review rates don't differentiate.** High-value share is uniform (10.0–10.8%) across every branch, bank, and transaction method — a flat amount threshold alone can't prioritize review effort.
-- **Monthly "trends" are partly a calendar artifact.** Raw monthly transaction counts vary mainly with month length; transactions per active day are stable at 292–301, and December 2024 (1 day of data) is excluded from trend conclusions.
+A retail bank needs a consistent management view across lending operations and transaction activity.
 
----
+However, different source fields produce different results for important business metrics such as loan default and delinquency.
 
-## 📈 Business Recommendations
+This creates several reporting challenges:
 
-1. **Resolve the default/delinquency definition conflict** with the data owner before either rate is used in a management report; report both, labeled, until resolved.
-2. **Prioritize collections/underwriting review** in Bihar/Patna and Odisha/Bhubaneswar, re-testing as more loans accumulate.
-3. **Don't use credit score, grade, or employment type for risk decisions** on this dataset — validate these fields against real outcomes first.
-4. **Investigate low repeat-borrowing** (24.5% retention) and consider retention offers for clients with strong repayment records.
-5. **Monitor purpose and branch concentration** (Services: 56.9% of loans; top 5 branches: 40.4% of value) and set exposure limits.
-6. **Standardize on one high-value threshold** (₹4,500, governed) and move to risk-based sampling rather than a flat cut-off, since review rates don't vary meaningfully by segment.
-7. **Compare transaction months on a per-active-day basis** and exclude partial periods like December 2024.
-8. **Capture multi-transaction history per account** — the current one-transaction-per-customer grain blocks any real retention or behavioral analysis.
+- inconsistent default-rate definitions;
+- disagreement between delinquency and repayment information;
+- difficulty reconciling KPIs across different tools;
+- limited visibility into branch and geographic performance;
+- inconsistent interpretation of high-value transactions.
+
+The goal of this project is to create a reliable analytical workflow that converts raw banking data into consistent and explainable management information.
 
 ---
 
-## 📁 Project Structure
+## 🔄 Analytics Workflow
+
+![BankSphere Analytics Workflow](images/project_workflow.png)
 
 ```text
-BankSphere_Intelligence_SQL_Excel_PowerBI/
-├── README.md
-├── CHANGELOG.md
+Raw Banking Data
+        ↓
+Data Validation
+        ↓
+SQL Analysis
+        ↓
+KPI Definition
+        ↓
+Data Reconciliation
+        ↓
+Excel Validation
+        ↓
+Power BI + DAX
+        ↓
+Interactive Dashboards
+        ↓
+Business Insights
+```
+
+---
+
+## 🛠️ Technology Stack
+
+| Technology | Project Usage | Focus |
+|---|---|---:|
+| PostgreSQL | Data validation, SQL analysis, KPI calculation, reconciliation | 40% |
+| Power BI | DAX, dashboards, visualization, management reporting | 40% |
+| Excel | PivotTables, validation, ad-hoc reconciliation | 20% |
+| Git & GitHub | Version control and documentation | Supporting |
+
+### Intentionally Out of Scope
+
+- Python
+- Machine Learning
+- Tableau
+- Fraud Prediction
+- Credit Scoring
+
+The goal is to demonstrate a focused **SQL + Excel + Power BI analytics workflow**.
+
+---
+
+# SQL Analysis
+
+PostgreSQL is used as the primary analytical layer.
+
+The SQL workflow covers:
+
+- missing-value checks;
+- duplicate validation;
+- loan portfolio aggregation;
+- unique-client analysis;
+- loan default calculations;
+- default-definition reconciliation;
+- delinquency validation;
+- branch-level analysis;
+- geographic analysis;
+- transaction aggregation;
+- high-value transaction analysis;
+- CTEs;
+- subqueries;
+- CASE statements;
+- window functions;
+- KPI consistency checks;
+- Power BI reporting views.
+
+### Business Questions Answered
+
+```text
+What is the total loan portfolio value?
+
+How many unique banking clients exist?
+
+What percentage of loans are classified as defaulted?
+
+Why do different default fields produce different results?
+
+Which regions show higher observed default rates?
+
+What is the total credit and debit transaction activity?
+
+How many transactions exceed the review threshold?
+
+Are business KPIs consistent across reporting layers?
+```
+
+### SQL Preview
+
+![SQL Analysis](images/sql_analysis.png)
+
+---
+
+# Excel Analysis
+
+Excel is used as an additional reconciliation and validation layer.
+
+The Excel workbooks are used for:
+
+- PivotTable analysis;
+- portfolio summaries;
+- transaction summaries;
+- SQL-result validation;
+- KPI reconciliation;
+- quick management analysis.
+
+### Excel Preview
+
+![Excel Analysis](images/excel_analysis.png)
+
+---
+
+# 📈 Power BI Dashboard
+
+Power BI converts the validated analytical outputs into management-level dashboards.
+
+## Loan Portfolio Overview
+
+The loan portfolio dashboard includes:
+
+- total loan amount;
+- average loan amount;
+- total loan records;
+- unique clients;
+- status-based default rate;
+- portfolio status;
+- branch-level performance;
+- geographic distribution.
+
+![Loan Portfolio Dashboard](images/loan_portfolio_overview_legacy.png)
+
+---
+
+## Branch Performance
+
+The branch analysis compares lending activity and observed default patterns across locations.
+
+![Branch Performance Dashboard](images/branch_performance_legacy.png)
+
+---
+
+## Transaction Overview
+
+The transaction dashboard tracks:
+
+- total credit value;
+- total debit value;
+- net transaction flow;
+- transaction volume;
+- high-value transaction count;
+- high-value review rate.
+
+![Transaction Overview](images/transaction_overview_legacy.png)
+
+---
+
+## Transaction Drilldown
+
+The drilldown page provides transaction-level investigation and detailed segment analysis.
+
+![Transaction Drilldown](images/transaction_drilldown_legacy.png)
+
+> **Dashboard Note:** Current screenshots were captured before the final report-layout corrections and are therefore treated as legacy screenshots. Final screenshots should replace them after Power BI Desktop verification.
+
+---
+
+# 🔍 Key Findings
+
+## 1. Two Different Default Definitions Exist
+
+The source data contains two conflicting default definitions.
+
+| Default Definition | Result |
+|---|---:|
+| Status-Based Default Rate | 10.30% |
+| Legacy Default Flag Rate | 5.00% |
+| Loans Matching Both | 10 |
+
+This means the same portfolio can produce significantly different reported default rates depending on which field is used.
+
+For this project:
+
+**Primary KPI:** Status-Based Default Rate — **10.30%**
+
+**Legacy Reconciliation KPI:** Default Flag Rate — **5.00%**
+
+This highlights the importance of proper KPI governance.
+
+---
+
+## 2. Delinquency Does Not Fully Match Repayment Behavior
+
+Some records show disagreement between delinquency indicators and recorded repayment behavior.
+
+This means delinquency should not automatically be treated as a reliable management KPI without further source-data validation.
+
+---
+
+## 3. Credit Score Shows Weak Relationship With Default
+
+Credit score shows approximately:
+
+```text
+Correlation with Default ≈ 0.03
+```
+
+Other traditional risk-related fields also show limited separation between defaulted and non-defaulted records.
+
+This is consistent with the simulated nature of the underlying dataset.
+
+---
+
+## 4. Geographic Patterns Need Further Investigation
+
+Bihar / Patna and Odisha / Bhubaneswar show higher observed default rates.
+
+However, these findings are based on relatively small samples.
+
+They should therefore be treated as **investigation signals rather than conclusions about regional credit risk**.
+
+---
+
+## 5. Credit and Debit Activity Is Closely Balanced
+
+Across **100,000 transactions**:
+
+| Metric | Amount |
+|---|---:|
+| Total Credits | ₹127.60M |
+| Total Debits | ₹127.29M |
+| Net Flow | ₹0.32M |
+
+The relatively small net flow indicates closely balanced credit and debit activity within the dataset.
+
+---
+
+## 6. High-Value Transaction Review
+
+A transaction-review threshold was defined as:
+
+```text
+Transaction Amount > ₹4,500
+```
+
+This identifies:
+
+| KPI | Result |
+|---|---:|
+| High-Value Transactions | 10,428 |
+| Review Rate | 10.43% |
+
+These transactions are classified only for **high-value review**.
+
+They are **not classified as fraudulent or suspicious transactions**.
+
+---
+
+## 7. Customer Behavior Analysis Is Limited
+
+Every customer/account appears only once in the transaction dataset.
+
+Therefore, the available data cannot reliably support:
+
+- repeat-purchase behavior;
+- transaction-frequency analysis;
+- customer retention;
+- customer lifecycle analysis;
+- longitudinal behavioral segmentation.
+
+---
+
+# 💡 Business Recommendations
+
+Based on the analysis:
+
+- establish one governed definition of loan default;
+- maintain a centralized KPI dictionary;
+- validate the legacy default flag before continued operational use;
+- investigate delinquency and repayment inconsistencies;
+- interpret high regional default rates carefully when sample sizes are small;
+- use the ₹4,500 threshold as a review metric rather than a fraud label;
+- collect multi-transaction customer histories for behavioral analytics;
+- introduce automated KPI reconciliation across SQL and BI reporting.
+
+---
+
+# ⚠️ Data Quality & Project Limitations
+
+## Simulated Dataset
+
+The data shows characteristics associated with simulated datasets, including:
+
+- relatively uniform transaction distributions;
+- similar review rates across several segments;
+- weak relationships between traditional credit-risk variables and default.
+
+The project therefore demonstrates **analytical methodology and BI implementation**, not production banking risk behavior.
+
+---
+
+## Conflicting KPI Definitions
+
+The two default indicators produce materially different results.
+
+Rather than hiding this discrepancy, the project reports both definitions separately.
+
+---
+
+## Transaction-Level Limitation
+
+Each customer/account contains only one transaction record.
+
+This prevents meaningful repeated-customer behavioral analysis.
+
+---
+
+## Power BI Verification
+
+Dashboard layout corrections were made, but the final reports have not yet been completely verified by reopening them in Power BI Desktop.
+
+A final Desktop validation should be completed before a live interview demonstration.
+
+---
+
+## Legacy Dashboard Screenshots
+
+Existing images were captured before the final dashboard corrections.
+
+They are retained as legacy screenshots until new verified screenshots are generated.
+
+---
+
+## Excel Presentation
+
+Some Excel sheets retain generic names.
+
+Sheet naming and workbook presentation should be refined before a live walkthrough.
+
+---
+
+# 📁 Project Structure
+
+```text
+banksphere-banking-performance-analytics/
+│
 ├── data/
-│   ├── export_excel_to_csv.py
 │   └── csv/
-│       ├── final_fact_cleaned.csv
-│       └── credit_debit_bank.csv
+│       ├── credit_debit_bank.csv
+│       └── final_fact_cleaned.csv
+│
 ├── sql/
-│   ├── 00_setup.sql … 07_consistency_checks.sql
-│   └── postgres/            # PostgreSQL port of all scripts
+│   └── postgres/
+│       ├── 00_setup.sql
+│       ├── 00b_load_data_psql.sql
+│       ├── 01_loan_data_quality.sql
+│       ├── 02_loan_kpi_analysis.sql
+│       ├── 03_transaction_data_quality.sql
+│       ├── 04_transaction_kpi_analysis.sql
+│       ├── 05_powerbi_views.sql
+│       ├── 06_reconciliation_queries.sql
+│       └── 07_consistency_checks.sql
+│
 ├── excel/
 │   ├── BankSphere_Loan_Portfolio_Analysis.xlsx
 │   └── BankSphere_Transaction_Analysis.xlsx
+│
 ├── powerbi/
-│   ├── DAX_Measures.md
 │   ├── BankSphere_Loan_Portfolio_Dashboard_1.pbix
 │   ├── BankSphere_Loan_Portfolio_Dashboard_2.pbix
-│   └── BankSphere_Transaction_Intelligence_Dashboard.pbix
+│   ├── BankSphere_Transaction_Intelligence_Dashboard.pbix
+│   └── DAX_Measures.md
+│
 ├── reports/
 │   ├── business_problem.md
-│   ├── stakeholder_requirements.md
-│   ├── kpi_dictionary.md
 │   ├── data_quality_report.md
+│   ├── executive_summary.md
 │   ├── key_findings.md
-│   └── recommendations.md
+│   ├── kpi_dictionary.md
+│   ├── recommendations.md
+│   └── stakeholder_requirements.md
+│
 ├── docs/
 │   ├── project_architecture.md
 │   ├── sql_query_catalog.md
-│   ├── excel_workbook_audit.md
 │   ├── powerbi_dashboard_audit.md
-│   ├── job_description_coverage.md
+│   ├── excel_workbook_audit.md
 │   └── interview_guide.md
+│
 ├── verification/
 │   ├── verified_metrics.json
 │   └── pbix_package_checks.json
-└── images/
-    └── *_legacy.png          # pre-correction dashboard screenshots
+│
+├── images/
+│   ├── project_workflow.png
+│   ├── sql_analysis.png
+│   ├── excel_analysis.png
+│   ├── loan_portfolio_overview_legacy.png
+│   ├── branch_performance_legacy.png
+│   ├── transaction_overview_legacy.png
+│   └── transaction_drilldown_legacy.png
+│
+├── README.md
+└── .gitignore
 ```
 
 ---
 
-## 🚀 How to Run This Project
+# How to Run the Project
+
+## Requirements
+
+```text
+PostgreSQL 13+
+psql / pgAdmin
+Microsoft Excel
+Microsoft Power BI Desktop
+Git
+```
+
+### 1. Clone Repository
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/yourusername/banksphere-intelligence-banking-analytics.git
-cd banksphere-intelligence-banking-analytics
-
-# 2. Load the data (PostgreSQL example)
-psql -f sql/postgres/00_setup.sql
-psql -f sql/postgres/00b_load_data_psql.sql
-
-# 3. Run the analysis scripts in order
-psql -f sql/postgres/01_loan_data_quality.sql
-psql -f sql/postgres/02_loan_kpi_analysis.sql
-psql -f sql/postgres/03_transaction_data_quality.sql
-psql -f sql/postgres/04_transaction_kpi_analysis.sql
-psql -f sql/postgres/05_powerbi_views.sql
-psql -f sql/postgres/06_reconciliation_queries.sql
-psql -f sql/postgres/07_consistency_checks.sql
-
-# 4. Open the dashboards
-# Open the .pbix files in powerbi/ using Power BI Desktop
+git clone https://github.com/<your-username>/banksphere-banking-performance-analytics.git
+cd banksphere-banking-performance-analytics
 ```
 
-MySQL 8 scripts are available directly under `sql/` if PostgreSQL isn't available.
+### 2. Create PostgreSQL Database
+
+```bash
+createdb banksphere_db
+```
+
+### 3. Create Tables
+
+```bash
+psql -d banksphere_db -f sql/postgres/00_setup.sql
+```
+
+### 4. Load Banking Data
+
+```bash
+psql -d banksphere_db -f sql/postgres/00b_load_data_psql.sql
+```
+
+### 5. Run Data Quality Checks
+
+```bash
+psql -d banksphere_db -f sql/postgres/01_loan_data_quality.sql
+psql -d banksphere_db -f sql/postgres/03_transaction_data_quality.sql
+```
+
+### 6. Run KPI Analysis
+
+```bash
+psql -d banksphere_db -f sql/postgres/02_loan_kpi_analysis.sql
+psql -d banksphere_db -f sql/postgres/04_transaction_kpi_analysis.sql
+```
+
+### 7. Create Power BI Views
+
+```bash
+psql -d banksphere_db -f sql/postgres/05_powerbi_views.sql
+```
+
+### 8. Run Reconciliation Checks
+
+```bash
+psql -d banksphere_db -f sql/postgres/06_reconciliation_queries.sql
+psql -d banksphere_db -f sql/postgres/07_consistency_checks.sql
+```
+
+### 9. Open Power BI Reports
+
+Open the `.pbix` files available inside:
+
+```text
+powerbi/
+```
+
+Refresh the corresponding data source if required.
 
 ---
 
-## 🧠 Key Skills Demonstrated
+# Skills Demonstrated
 
-- SQL: joins, CTEs, subqueries, window functions, KPI logic, data-quality auditing
-- Data reconciliation across SQL, Excel, and Power BI
-- KPI definition and governance
-- Power BI dashboard development and DAX measures
-- Excel PivotTable analysis and validation
-- Evidence-based business insight and recommendation writing
-- Honest handling of conflicting/ambiguous source data
+This project demonstrates practical experience in:
+
+**SQL & Database**
+- PostgreSQL
+- CTEs
+- Subqueries
+- CASE expressions
+- Window functions
+- Data aggregation
+
+**Data Analytics**
+- Data Cleaning
+- Data Validation
+- Data Reconciliation
+- KPI Analysis
+- Exploratory Analysis
+- Root Cause Investigation
+
+**Business Intelligence**
+- Power BI
+- DAX
+- Data Modeling
+- Dashboard Development
+- KPI Reporting
+- Data Visualization
+
+**Excel**
+- PivotTables
+- Data Validation
+- Reconciliation
+- Ad-hoc Analysis
+
+**Business Skills**
+- Banking Analytics
+- Loan Portfolio Analysis
+- Transaction Monitoring
+- KPI Governance
+- Business Reporting
+- Insight Generation
 
 ---
 
-## 📝 Conclusion
+# 💼 Portfolio Positioning
 
-BankSphere Intelligence takes two banking datasets with genuinely conflicting KPI definitions and turns them into a governed, reconciled analytics layer across SQL, Excel, and Power BI. Rather than picking whichever number matched the existing dashboard, the project surfaces and documents every conflict (default rate, delinquency flag, high-value threshold), states clearly what the data can and can't support, and ends with specific, evidence-backed recommendations for lending operations and transaction review teams.
+This project demonstrates more than dashboard development.
+
+It follows a complete Data Analyst workflow:
+
+```text
+Business Problem
+      ↓
+Data Validation
+      ↓
+SQL Analysis
+      ↓
+KPI Governance
+      ↓
+Data Reconciliation
+      ↓
+Power BI Reporting
+      ↓
+Business Insights
+```
+
+### Suitable Roles
+
+- Data Analyst
+- BI Analyst
+- Power BI Analyst
+- SQL Analyst
+- Junior Business Intelligence Analyst
 
 ---
 
-### Portfolio Positioning
+# Resume Description
 
-**Resume title:** BankSphere Intelligence — Transaction Monitoring & Banking Performance Analytics
-**Suggested repo name:** `banksphere-intelligence-banking-analytics`
-**One-line description:** SQL, Excel, and Power BI banking analytics project covering loan portfolio performance, transaction monitoring, KPI governance, and data-quality reconciliation.
+### BankSphere Intelligence — Banking Performance & Transaction Analytics
+**PostgreSQL | Excel | Power BI | DAX**
+
+- Analyzed **2,000 loan records and 100,000 banking transactions** to evaluate portfolio performance, transaction activity, branch-level patterns, and high-value transaction reviews.
+- Developed SQL-based KPI validation and reconciliation workflows across **870 unique clients**, identifying differences between a **10.30% status-based default rate** and a **5.00% legacy default rate**.
+- Built Power BI dashboards and DAX measures to monitor **₹52.36M loan exposure, ₹127.60M credits, ₹127.29M debits**, and **10,428 high-value transactions** for management reporting.
+
+---
+
+# Repository Name
+
+```text
+banksphere-banking-performance-analytics
+```
+
+### GitHub Description
+
+> Banking analytics project using PostgreSQL, Excel, and Power BI for loan portfolio analysis, KPI reconciliation, data-quality validation, and transaction monitoring.
+
+---
+
+# 👤 Author
+
+**Babasaheb Patil**
+
+B.Tech — Computer Science Engineering  
+Data Analytics | Business Intelligence | SQL | Power BI
+
+GitHub: [babasahebpatil-ai](https://github.com/babasahebpatil-ai)
+
+---
+
+## Project Takeaway
+
+> **Data → Validation → SQL Analysis → KPI Governance → Power BI → Business Insights**
+
+BankSphere Intelligence demonstrates how a Data Analyst can move beyond basic dashboard creation by validating source data, questioning inconsistent KPIs, reconciling reporting definitions, and transforming banking data into reliable management information.
+
+---
+
+*This project uses simulated banking data and is intended for educational and portfolio purposes. The results demonstrate analytical methodology, SQL analysis, KPI governance, reconciliation, Excel validation, and Power BI reporting rather than real-world credit-risk or fraud assessment.*
